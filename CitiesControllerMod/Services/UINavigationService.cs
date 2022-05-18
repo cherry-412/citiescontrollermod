@@ -27,6 +27,11 @@ namespace CitiesControllerMod.Services
         public UIComponent ToolbarTabItemSelectionSprite; // this panel object shows which gtscontainer item is selected
     }
 
+    class TSTabGroup
+    {
+        public UITabstrip GroupToolstrip; // needed for navigating between the toolstrip tab 
+    }
+
     class SpecialUIButtons
     {
         public UIButton Esc; // pause menu
@@ -37,7 +42,7 @@ namespace CitiesControllerMod.Services
 
     class CursorTools
     {
-        public UIButton Esc;
+        public NetTool[] NetTools;
     }
 
     public class UINavigationService
@@ -47,10 +52,10 @@ namespace CitiesControllerMod.Services
 
         private TSBar tsBar = new TSBar();
         private TSContainer tsContainer = new TSContainer();
+        private TSTabGroup tsTabGroup = new TSTabGroup();
         private SpecialUIButtons specialUIButtons = new SpecialUIButtons();
         private CursorTools cursorTools = new CursorTools();
-        UITabstrip groupToolStrip;
-        NetTool[] netTools;
+        
 
         UIView AView;
 
@@ -253,14 +258,14 @@ namespace CitiesControllerMod.Services
         {
             try
             {
-                var navigatingIntoNegatives = !isNext && groupToolStrip.selectedIndex == 0;
+                var navigatingIntoNegatives = !isNext && tsTabGroup.GroupToolstrip.selectedIndex == 0;
                 if (isNext)
                 {
-                    groupToolStrip.selectedIndex++;
+                    tsTabGroup.GroupToolstrip.selectedIndex++;
                 }
                 else if (!navigatingIntoNegatives)
                 {
-                    groupToolStrip.selectedIndex--;
+                    tsTabGroup.GroupToolstrip.selectedIndex--;
                 }
             }
             catch (Exception)
@@ -273,7 +278,7 @@ namespace CitiesControllerMod.Services
             int controlPointCount = 0;
             try
             {
-                var netTool = netTools[0];
+                var netTool = cursorTools.NetTools[0];
                 controlPointCount = netTool.GetFieldValue<int>("m_controlPointCount");
             }
             catch (Exception)
@@ -330,8 +335,8 @@ namespace CitiesControllerMod.Services
                 tsContainer.ToolbarTabItemSelectionSprite = AView.AddUIComponent(typeof(ToolbarTabItemSelectionSprite));
 
             // toolstrip tab groups fetch
-            if (groupToolStrip == null)
-                groupToolStrip = FetchService.FetchGroupToolstrip();
+            if (tsTabGroup.GroupToolstrip == null)
+                tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip();
 
             // special buttons fetch
             if (specialUIButtons.Esc == null)
@@ -344,8 +349,8 @@ namespace CitiesControllerMod.Services
                 specialUIButtons.Bulldozer = FetchService.FetchBulldozerButton();
 
             // fetch cursor tools
-            if (netTools == null)
-                netTools = FetchService.FetchNetTools();
+            if (cursorTools.NetTools == null)
+                cursorTools.NetTools = FetchService.FetchNetTools();
         }
     }
 
