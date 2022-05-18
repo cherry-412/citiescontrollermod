@@ -240,8 +240,8 @@ namespace CitiesControllerMod.Services
                                     tsContainer.ToolbarTabItemSelectionSprite.absolutePosition = result.absolutePosition;
                                     tsContainer.ToolbarTabItemSelectionSprite.size = result.size;
                                     tsContainer.ToolbarTabItemSelectionSprite.isVisible = ToolstripTabIsOpen;
-                                    var muck = tsContainer.ToolbarTabItemSelectionSprite.components[0] as UILabel;
-                                    muck.text = result.name;
+                                    var panel = tsContainer.ToolbarTabItemSelectionSprite.components[0] as UILabel;
+                                    panel.text = result.name;
                                 }
                             }
                         }
