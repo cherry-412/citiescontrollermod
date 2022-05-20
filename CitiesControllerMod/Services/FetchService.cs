@@ -110,7 +110,14 @@ namespace CitiesControllerMod.Services
         {
             return UIView.Find<UIMultiStateButton>("BulldozerButton");
         }
-
+        public UIMultiStateButton FetchSpeedButton()
+        {
+            return UIView.Find<UIMultiStateButton>("Speed");
+        }
+        public UIMultiStateButton FetchPlayButton()
+        {
+            return UIView.Find<UIMultiStateButton>("Play");
+        }
         // Cursor tools
         public NetTool[] FetchNetTools()
         {

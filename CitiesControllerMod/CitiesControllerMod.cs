@@ -69,6 +69,13 @@ namespace CitiesControllerMod
                     UINavigationService.ToolstripMoveSelection(true);
             }
 
+            if (InputService.GetButtonClickInstant(JoystickInputs.LeftStickPress, state.Buttons.LeftStick))
+                UINavigationService.PressPlayButton();
+
+            //if (InputService.GetButtonClickHoldable(JoystickInputs.LeftStickPress, state.Buttons.LeftStick))
+              //  UINavigationService.ToolstripMoveSelection();
+              // this won't work yet, need to find a way to choose between instant vs. holdable based on hold time
+
             MouseService.UpdateClickSimulationState();
 
             if (!MouseService.IsClickDownUpProcessRunning())

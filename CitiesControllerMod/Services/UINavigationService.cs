@@ -39,6 +39,8 @@ namespace CitiesControllerMod.Services
         public UIButton TSClose; // for closing toolstrip with B
         public UIButton Freecamera;
         public UIMultiStateButton Bulldozer;
+        public UIMultiStateButton Speed;
+        public UIMultiStateButton Play;
     }
 
     class CursorTools
@@ -304,6 +306,17 @@ namespace CitiesControllerMod.Services
             return controlPointCount;
         }
 
+        public void SetNetToolEnabled(bool enabled)
+        {
+            try
+            {
+                var netTool = cursorTools.NetTools[0];
+                netTool.enabled = enabled;
+            }
+            catch (Exception)
+            { }
+        }
+
         //button actions
         public void PressEscButton()
         {
@@ -321,6 +334,15 @@ namespace CitiesControllerMod.Services
         public void PressBulldozerButton()
         {
             specialUIButtons.Bulldozer.SimulateClick();
+        }
+        
+        public void PressSpeedButton()
+        {
+            specialUIButtons.Speed.SimulateClick();
+        }
+        public void PressPlayButton()
+        {
+            specialUIButtons.Play.SimulateClick();
         }
 
         // bulk fetching
@@ -363,6 +385,10 @@ namespace CitiesControllerMod.Services
                 specialUIButtons.Freecamera = FetchService.FetchFreecameraButton();
             if (specialUIButtons.Bulldozer == null)
                 specialUIButtons.Bulldozer = FetchService.FetchBulldozerButton();
+            if (specialUIButtons.Speed == null)
+                specialUIButtons.Speed = FetchService.FetchSpeedButton();
+            if (specialUIButtons.Play == null)
+                specialUIButtons.Play = FetchService.FetchPlayButton();
 
             // fetch cursor tools
             if (cursorTools.NetTools == null)
