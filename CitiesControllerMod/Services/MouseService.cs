@@ -85,7 +85,6 @@ namespace CitiesControllerMod.Services
                 }
                 else
                 {
-                    Debug.Log(RightClick.ReadyForClickRequest);
                     if (!RightClick.ReadyForClickRequest)
                     {
                         MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.RightUp);
