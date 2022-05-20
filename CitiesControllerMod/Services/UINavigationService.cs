@@ -15,6 +15,7 @@ namespace CitiesControllerMod.Services
         public UIComponent MainToolstrip; // TSBar: components -> MainToolstrip
         public List<UIComponent> MainToolstripItemsSelectable; // TSBar: components -> MainToolstrip: components (that are selectable)
         public List<UIComponent> MainToolstripItems; // TSBar: components -> MainToolstrip: components
+        public UIComponent ToolstripSelectionSprite;
     }
 
     class TSContainer
@@ -55,7 +56,7 @@ namespace CitiesControllerMod.Services
         private TSTabGroup tsTabGroup = new TSTabGroup();
         private SpecialUIButtons specialUIButtons = new SpecialUIButtons();
         private CursorTools cursorTools = new CursorTools();
-        
+
 
         UIView AView;
 
@@ -70,6 +71,16 @@ namespace CitiesControllerMod.Services
         {
             toolstripTabIsOpen = tsContainer.Self.selectedIndex != -1;
             toolstripIsInInspectMode = toolstripBarHoverIndex == -1;
+            try
+            {
+                if (tsBar.ToolstripSelectionSprite != null && !toolstripIsInInspectMode)
+                {
+                    UIComponent label = tsBar.ToolstripSelectionSprite.GetComponent<UIComponent>();
+                    label.isVisible = !toolstripTabIsOpen;
+                }
+            }
+            catch (Exception)
+            { }
         }
         public void UpdateGTSContainer()
         {
@@ -110,9 +121,14 @@ namespace CitiesControllerMod.Services
                 var selectedComponent = tsBar.MainToolstripItems[toolstripBarHoverIndex];
                 component = tsBar.MainToolstripItemsSelectable[tsBar.MainToolstripItemsSelectable.FindIndex(x => x.name == selectedComponent.name) + offset];
 
-                ToolstripSetSelectedItemHover(false);
                 toolstripBarHoverIndex = component.zOrder;
-                ToolstripSetSelectedItemHover(true);
+                tsBar.ToolstripSelectionSprite.position = component.position;
+                tsBar.ToolstripSelectionSprite.relativePosition = component.relativePosition;
+                tsBar.ToolstripSelectionSprite.absolutePosition = component.absolutePosition;
+                tsBar.ToolstripSelectionSprite.size = component.size;
+                tsBar.ToolstripSelectionSprite.isVisible = true;
+                var panel = tsBar.ToolstripSelectionSprite.components[0] as UILabel;
+                panel.text = component.name;
             }
             catch (Exception)
             { }
@@ -122,7 +138,6 @@ namespace CitiesControllerMod.Services
             try
             {
                 tsBar.MainToolstripItems[toolstripBarHoverIndex].SimulateClick();
-                ToolstripSetSelectedItemHover(true);
                 MouseService.MoveMouseToScreenCenter();
                 UpdateGTSContainer();
             }
@@ -132,7 +147,7 @@ namespace CitiesControllerMod.Services
         {
             try
             {
-                ToolstripSetSelectedItemHover(false);
+                tsBar.ToolstripSelectionSprite.isVisible = false;
             }
             catch (Exception) { }
 
@@ -219,6 +234,7 @@ namespace CitiesControllerMod.Services
             catch (Exception)
             { }
         }
+
         public void RenderToolStripTabHover()
         {
             try
@@ -234,14 +250,16 @@ namespace CitiesControllerMod.Services
                             {
                                 if (gtsContainerDeeperItem.name == "ScrollablePanel")
                                 {
+                                    var toolstripSelectionName = ToolstripSelectionName();
+                                    var visible = toolstripSelectionName != "Money" && toolstripSelectionName != "Policies";
                                     var result = gtsContainerDeeperItem.components[selectedTabItemScrollPanel.selectedIndex];
                                     tsContainer.ToolbarTabItemSelectionSprite.position = result.position;
                                     tsContainer.ToolbarTabItemSelectionSprite.relativePosition = result.relativePosition;
                                     tsContainer.ToolbarTabItemSelectionSprite.absolutePosition = result.absolutePosition;
                                     tsContainer.ToolbarTabItemSelectionSprite.size = result.size;
-                                    tsContainer.ToolbarTabItemSelectionSprite.isVisible = ToolstripTabIsOpen;
-                                    var panel = tsContainer.ToolbarTabItemSelectionSprite.components[0] as UILabel;
-                                    panel.text = result.name;
+                                    tsContainer.ToolbarTabItemSelectionSprite.isVisible = ToolstripTabIsOpen && visible;
+                                    var label = tsContainer.ToolbarTabItemSelectionSprite.components[0] as UILabel;
+                                    label.text = result.name;
                                 }
                             }
                         }
@@ -294,7 +312,7 @@ namespace CitiesControllerMod.Services
         public void PressTSCloseButton()
         {
             specialUIButtons.TSClose.SimulateClick();
-            ToolstripSetSelectedItemHover(true);
+            tsContainer.ToolbarTabItemSelectionSprite.isVisible = false;
         }
         public void PressFreecameraButton()
         {
@@ -331,8 +349,6 @@ namespace CitiesControllerMod.Services
                 tsContainer.GTSContainerScrollablePanelItems = FetchService.FetchTSPanelScrollablePanelItems(tsContainer.GTSContainer);
             if (tsContainer.GeneratedScrollPanels == null)
                 tsContainer.GeneratedScrollPanels = FetchService.FetchGeneratedScrollPanels();
-            if (tsContainer.ToolbarTabItemSelectionSprite == null)
-                tsContainer.ToolbarTabItemSelectionSprite = AView.AddUIComponent(typeof(ToolbarTabItemSelectionSprite));
 
             // toolstrip tab groups fetch
             if (tsTabGroup.GroupToolstrip == null)
@@ -351,6 +367,25 @@ namespace CitiesControllerMod.Services
             // fetch cursor tools
             if (cursorTools.NetTools == null)
                 cursorTools.NetTools = FetchService.FetchNetTools();
+
+            LoadCustomUIElements();
+        }
+
+        private void LoadCustomUIElements()
+        {
+            try
+            {
+                tsBar.ToolstripSelectionSprite = AView.FindUIComponent(new ToolstripSelectionSprite().name);
+                tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent(new ToolbarTabItemSelectionSprite().name);
+            }
+            catch (Exception)
+            { }
+
+            if (tsBar.ToolstripSelectionSprite == null)
+                tsBar.ToolstripSelectionSprite = AView.AddUIComponent(typeof(ToolstripSelectionSprite));
+
+            if (tsContainer.ToolbarTabItemSelectionSprite == null)
+                tsContainer.ToolbarTabItemSelectionSprite = AView.AddUIComponent(typeof(ToolbarTabItemSelectionSprite));
         }
     }
 
@@ -363,8 +398,30 @@ namespace CitiesControllerMod.Services
             this.width = 0;
             this.height = 0;
             this.position = new Vector2(0, 0);
+            this.isVisible = false;
+            this.name = "ToolbarTabItemSelectionSprite";
             UILabel l = this.AddUIComponent<UILabel>();
             l.text = "";
+            l.backgroundSprite = "ScrollbarTrack";
+            l.font.size = 16;
+            l.relativePosition = new Vector2(0, -50);
+        }
+    }
+
+    public class ToolstripSelectionSprite : UIPanel
+    {
+        public override void Start()
+        {
+            this.backgroundSprite = "ListItemHover";
+            this.color = new Color32(200, 200, 255, 100);
+            this.width = 0;
+            this.height = 0;
+            this.position = new Vector2(0, 0);
+            this.name = "ToolstripSelectionSprite";
+            UILabel l = this.AddUIComponent<UILabel>();
+            l.text = "";
+            l.font.size = 20;
+            l.relativePosition = new Vector2(0, -20);
         }
     }
 }

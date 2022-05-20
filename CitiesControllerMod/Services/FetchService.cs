@@ -28,7 +28,7 @@ namespace CitiesControllerMod.Services
         {
             List<UIComponent> result = new List<UIComponent>();
             result.AddRange(mainToolstripItems);
-            result.RemoveAll(x => x.name == "Separator" || x.name == "SmallSeparator" || !x.isEnabled);
+            result.RemoveAll(x => x.name == "Separator" || x.name == "SmallSeparator");
             return result;
         }
 
