@@ -15,7 +15,7 @@ namespace CitiesControllerMod.Services
     {
         public ClickStageEnum Stage { get; set; } = ClickStageEnum.Ready;
         public bool ClickRequestActive { get; set; } = false;
-        public bool ReadyForClickRequest { get; set; } = false;
+        public bool ReadyForClickRequest { get; set; } = true;
     }
 
     public class MouseService
@@ -85,6 +85,7 @@ namespace CitiesControllerMod.Services
                 }
                 else
                 {
+                    Debug.Log(RightClick.ReadyForClickRequest);
                     if (!RightClick.ReadyForClickRequest)
                     {
                         MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.RightUp);
