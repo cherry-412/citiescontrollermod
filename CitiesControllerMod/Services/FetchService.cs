@@ -87,9 +87,19 @@ namespace CitiesControllerMod.Services
         }
 
         // UI: Toolstrip tab groups
-        public UITabstrip FetchGroupToolstrip()
+        public UITabstrip FetchGroupToolstrip(UITabContainer tscontainer)
         {
-            return UIView.Find<UITabstrip>("GroupToolstrip");
+            if (tscontainer.selectedIndex != -1)
+            {
+                foreach (var component in tscontainer.components[tscontainer.selectedIndex].components)
+                {
+                    if (component.name == "GroupToolstrip")
+                    {
+                        return component as UITabstrip;
+                    }
+                }
+            }
+            return UIView.Find<UITabstrip>("GroupToolStrip"); // otherwise it'll null. maybe look into this one
         }
 
 

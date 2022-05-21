@@ -89,6 +89,11 @@ namespace CitiesControllerMod.Services
             tsContainer.GTSContainer = FetchService.FetchGTSContainer(tsContainer.Self);
         }
 
+        public void UpdateGroupToolstrip()
+        {
+            tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip(tsContainer.Self);
+        }
+
         // toolstrip bar navigation
         public string ToolstripSelectionName()
         {
@@ -142,6 +147,7 @@ namespace CitiesControllerMod.Services
                 tsBar.MainToolstripItems[toolstripBarHoverIndex].SimulateClick();
                 MouseService.MoveMouseToScreenCenter();
                 UpdateGTSContainer();
+                UpdateGroupToolstrip();
             }
             catch (Exception) { }
         }
@@ -276,20 +282,28 @@ namespace CitiesControllerMod.Services
         // toolstrip tab group navigation
         public void ToolstripTabGroupMoveSelection(bool isNext)
         {
-            try
+            var thereAreTabsToNavigate = tsContainer.GTSContainer.components.Count >= 2;
+            if (thereAreTabsToNavigate)
             {
-                var navigatingIntoNegatives = !isNext && tsTabGroup.GroupToolstrip.selectedIndex == 0;
-                if (isNext)
+                try
                 {
-                    tsTabGroup.GroupToolstrip.selectedIndex++;
+                    if (isNext)
+                    {
+                        var canNavigateForward = tsContainer.GTSContainer.selectedIndex + 1 < tsContainer.GTSContainer.components.Count;
+                        if (canNavigateForward)
+                            tsContainer.GTSContainer.selectedIndex++;
+                    }
+                    else
+                    {
+                        var canNavigateBack = !isNext && tsContainer.GTSContainer.selectedIndex > 0;
+                        if (canNavigateBack)
+                            tsContainer.GTSContainer.selectedIndex--;
+                    }
+                    tsTabGroup.GroupToolstrip.selectedIndex = tsContainer.GTSContainer.selectedIndex;
                 }
-                else if (!navigatingIntoNegatives)
-                {
-                    tsTabGroup.GroupToolstrip.selectedIndex--;
-                }
+                catch (Exception)
+                { }
             }
-            catch (Exception)
-            { }
         }
 
         // net tool
@@ -335,7 +349,6 @@ namespace CitiesControllerMod.Services
         {
             specialUIButtons.Bulldozer.SimulateClick();
         }
-        
         public void PressSpeedButton()
         {
             specialUIButtons.Speed.SimulateClick();
@@ -374,7 +387,7 @@ namespace CitiesControllerMod.Services
 
             // toolstrip tab groups fetch
             if (tsTabGroup.GroupToolstrip == null)
-                tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip();
+                tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip(tsContainer.Self);
 
             // special buttons fetch
             if (specialUIButtons.Esc == null)
