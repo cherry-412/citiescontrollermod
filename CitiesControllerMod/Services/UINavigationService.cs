@@ -133,23 +133,28 @@ namespace CitiesControllerMod.Services
         }
         public void ToolstripMoveSelection(bool isNext)
         {
-            // at low framerates there is a small lag when this runs. needs fix
-            // selectedIndex = -1 means "none chosen". could be useful for implementing console-style nav here
-            UIComponent component;
-            int offset = 0;
-            if (ToolstripBarHoverIndex == -1)
+            try
             {
-                ToolstripBarHoverIndex = 0;
-            }
-            else
-            {
-                offset = isNext ? +1 : -1;
-            }
-            var selectedComponent = tsBar.MainToolstripItems[ToolstripBarHoverIndex];
-            var newSelectionIndex = tsBar.MainToolstripItemsSelectable.FindIndex(x => x.name == selectedComponent.name) + offset;
-            bool canNavigate = isNext ? newSelectionIndex < tsBar.MainToolstripItemsSelectable.Count : newSelectionIndex >= 0;
-            if (canNavigate)
-            {
+                UIComponent component;
+                int offset = 0;
+                if (ToolstripBarHoverIndex == -1)
+                {
+                    ToolstripBarHoverIndex = 0;
+                }
+                else
+                {
+                    offset = isNext ? +1 : -1;
+                }
+                var selectedComponent = tsBar.MainToolstripItems[ToolstripBarHoverIndex];
+                var newSelectionIndex = tsBar.MainToolstripItemsSelectable.FindIndex(x => x.name == selectedComponent.name) + offset;
+                if (isNext && newSelectionIndex > tsBar.MainToolstripItemsSelectable.Count - 1)
+                {
+                    newSelectionIndex = 0;
+                }
+                else if (!isNext && newSelectionIndex < 0)
+                {
+                    newSelectionIndex = tsBar.MainToolstripItemsSelectable.Count - 1;
+                }
                 component = tsBar.MainToolstripItemsSelectable[newSelectionIndex];
                 ToolstripBarHoverIndex = component.zOrder;
                 tsBar.ToolstripSelectionSprite.position = component.position;
@@ -159,6 +164,10 @@ namespace CitiesControllerMod.Services
                 tsBar.ToolstripSelectionSprite.isVisible = true;
                 var panel = tsBar.ToolstripSelectionSprite.components[0] as UILabel;
                 panel.text = component.name;
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
             }
         }
         public void ToolstripClickSelection()
@@ -309,19 +318,19 @@ namespace CitiesControllerMod.Services
             {
                 try
                 {
-                    if (isNext)
+                    var offset = isNext ? 1 : -1;
+                    var newSelectionIndex = tsContainer.GTSContainer.selectedIndex + offset;
+                    var max = tsContainer.GTSContainer.components.Count;
+                    if (isNext && newSelectionIndex > max - 1)
                     {
-                        var canNavigateForward = tsContainer.GTSContainer.selectedIndex + 1 < tsContainer.GTSContainer.components.Count;
-                        if (canNavigateForward)
-                            tsContainer.GTSContainer.selectedIndex++;
+                        newSelectionIndex = 0;
                     }
-                    else
+                    else if (!isNext && newSelectionIndex < 0)
                     {
-                        var canNavigateBack = !isNext && tsContainer.GTSContainer.selectedIndex > 0;
-                        if (canNavigateBack)
-                            tsContainer.GTSContainer.selectedIndex--;
+                        newSelectionIndex = max - 1;
                     }
-                    tsTabGroup.GroupToolstrip.selectedIndex = tsContainer.GTSContainer.selectedIndex;
+                    tsContainer.GTSContainer.selectedIndex = newSelectionIndex;
+                    tsTabGroup.GroupToolstrip.selectedIndex = newSelectionIndex;
                 }
                 catch (Exception e)
                 {
