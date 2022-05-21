@@ -214,16 +214,27 @@ namespace CitiesControllerMod.Services
             var currentScrollPanel = SelectedTabItemScrollPanel();
             if (currentScrollPanel != null)
             {
-                //if decrement::: theres an issue with sleectedindex -1 here. shouldnt be able to non-select with dpad in gts.
                 if (currentScrollPanel.selectedIndex == -1)
                     currentScrollPanel.selectedIndex = 0;
 
-                var navigatingIntoNegatives = !isNext && currentScrollPanel.selectedIndex == 0;
+                int offset = isNext ? 1 : -1;
+                int newSelectionIndex = currentScrollPanel.selectedIndex + offset;
+                int max = currentScrollPanel.childComponents.Count;
+                bool scrollWrapAround = false;
 
-                if (!navigatingIntoNegatives)
+                if (isNext && newSelectionIndex > max - 1)
                 {
-                    currentScrollPanel.selectedIndex = isNext ? currentScrollPanel.selectedIndex + 1 : currentScrollPanel.selectedIndex - 1;
+                    newSelectionIndex = 0;
+                    scrollWrapAround = true;
                 }
+                else if (!isNext && newSelectionIndex < 0)
+                {
+                    newSelectionIndex = max - 1;
+                    scrollWrapAround = true;
+                }
+                currentScrollPanel.selectedIndex = newSelectionIndex;
+
+                //scrolling new item into view
                 foreach (var item in tsContainer.GTSContainer.components)
                 {
                     if (item.name == currentScrollPanel.name)
@@ -259,11 +270,15 @@ namespace CitiesControllerMod.Services
                         {
                             if (doscroll)
                             {
+                                var incrementAmount = scrollbar.incrementAmount;
+                                if (scrollWrapAround)
+                                {
+                                    incrementAmount = isNext ? -50000 : 50000;
+                                }
                                 typeof(UIScrollbar)
                                     .GetMethod("ScrollEase", BindingFlags.NonPublic | BindingFlags.Instance)
-                                    .Invoke(scrollbar, new object[1] { isNext ? scrollbar.incrementAmount : -scrollbar.incrementAmount });
+                                    .Invoke(scrollbar, new object[1] { incrementAmount });
                             }
-
                         }
                     }
                 }
