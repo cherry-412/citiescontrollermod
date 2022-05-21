@@ -76,6 +76,7 @@ namespace CitiesControllerMod.Services
                 UIComponent label = tsBar.ToolstripSelectionSprite.GetComponent<UIComponent>();
                 label.isVisible = !toolstripTabIsOpen;
             }
+            HideCustomUIComponentOnMouseHover(tsBar.ToolstripSelectionSprite);
         }
         public static void ResetToolstripBarIndexes()
         {
@@ -438,10 +439,10 @@ namespace CitiesControllerMod.Services
             if (cursorTools.NetTools == null)
                 cursorTools.NetTools = FetchService.FetchNetTools();
 
-            LoadCustomUIElements();
+            LoadCustomUIComponents();
         }
 
-        private void LoadCustomUIElements()
+        private void LoadCustomUIComponents()
         {
             try
             {
@@ -466,7 +467,22 @@ namespace CitiesControllerMod.Services
             }
         }
 
-        public static void HideCustomUIElements()
+        private void HideCustomUIComponentOnMouseHover(UIComponent component)
+        {
+            var cursorPos = MouseOperations.GetCursorPosition();
+            if (component.containsMouse)
+                component.zOrder = 0;
+            else
+            {
+                if (cursorPos.X < component.absolutePosition.x
+                    || cursorPos.X > component.absolutePosition.x + component.size.x)
+                {
+                    component.zOrder = 25;
+                }
+            }
+        }
+
+        public static void HideCustomUIComponents()
         {
             UIView aView = UIView.GetAView();
             string[] componentNames = new string[] { "ToolstripSelectionSprite", "ToolbarTabItemSelectionSprite" };
@@ -485,7 +501,7 @@ namespace CitiesControllerMod.Services
 
         public static void OnReleased()
         {
-            UINavigationService.HideCustomUIElements();
+            UINavigationService.HideCustomUIComponents();
             UINavigationService.ResetToolstripBarIndexes();
             LoadingActions.UIReloadNeeded = true;
         }
@@ -500,7 +516,6 @@ namespace CitiesControllerMod.Services
             this.width = 0;
             this.height = 0;
             this.position = new Vector2(0, 0);
-            this.isVisible = false;
             this.name = "ToolbarTabItemSelectionSprite";
             UILabel l = this.AddUIComponent<UILabel>();
             l.text = "";
