@@ -248,6 +248,9 @@ namespace CitiesControllerMod.Services
                 var selectedTabItemScrollPanel = SelectedTabItemScrollPanel();
                 if (selectedTabItemScrollPanel != null)
                 {
+                    if (selectedTabItemScrollPanel.selectedIndex == -1)
+                        selectedTabItemScrollPanel.selectedIndex = 0;
+
                     foreach (var gtsContainerComponent in this.tsContainer.GTSContainer.components)
                     {
                         if (gtsContainerComponent.name == selectedTabItemScrollPanel.name)
@@ -270,7 +273,6 @@ namespace CitiesControllerMod.Services
                             }
                         }
                     }
-
                 }
             }
             catch (Exception)
