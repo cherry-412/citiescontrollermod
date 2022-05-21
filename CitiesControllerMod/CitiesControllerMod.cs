@@ -34,6 +34,15 @@ namespace CitiesControllerMod
         }
     }
 
+    public class LoadingActions : LoadingExtensionBase
+    {
+        public static bool UIReloadNeeded = false;
+        public override void OnLevelUnloading()
+        {
+            UINavigationService.OnReleased();
+        }
+    }
+
     public class JoystickIntegrationProcess : ThreadingExtensionBase
     {
         private UINavigationService UINavigationService = new UINavigationService();
@@ -41,9 +50,14 @@ namespace CitiesControllerMod
         private MouseService MouseService = new MouseService();
         private InputService InputService = new InputService();
 
+        public override void OnReleased()
+        {
+            UINavigationService.OnReleased();
+        }
+
         public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
         {
-            UINavigationService.EnsureUIElementAvailability();
+            UINavigationService.EnsureUIElementAvailability(LoadingActions.UIReloadNeeded);
             UINavigationService.UpdateToolstripStates();
             GamePadState state = GamePad.GetState(PlayerIndex.One);
             if (UINavigationService.ToolstripTabIsOpen)

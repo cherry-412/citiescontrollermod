@@ -53,16 +53,14 @@ namespace CitiesControllerMod.Services
         private FetchService FetchService = new FetchService();
         private MouseService MouseService = new MouseService();
 
+        UIView AView;
         private TSBar tsBar = new TSBar();
         private TSContainer tsContainer = new TSContainer();
         private TSTabGroup tsTabGroup = new TSTabGroup();
         private SpecialUIButtons specialUIButtons = new SpecialUIButtons();
         private CursorTools cursorTools = new CursorTools();
 
-
-        UIView AView;
-
-        private int toolstripBarHoverIndex = -1;
+        public static int ToolstripBarHoverIndex = -1;
         private bool toolstripTabIsOpen = false;
         private bool toolstripIsInInspectMode = false;
 
@@ -72,17 +70,22 @@ namespace CitiesControllerMod.Services
         public void UpdateToolstripStates()
         {
             toolstripTabIsOpen = tsContainer.Self.selectedIndex != -1;
-            toolstripIsInInspectMode = toolstripBarHoverIndex == -1;
+            toolstripIsInInspectMode = ToolstripBarHoverIndex == -1;
+            if (tsBar.ToolstripSelectionSprite != null && !toolstripIsInInspectMode)
+            {
+                UIComponent label = tsBar.ToolstripSelectionSprite.GetComponent<UIComponent>();
+                label.isVisible = !toolstripTabIsOpen;
+            }
+        }
+        public static void ResetToolstripBarIndexes()
+        {
             try
             {
-                if (tsBar.ToolstripSelectionSprite != null && !toolstripIsInInspectMode)
-                {
-                    UIComponent label = tsBar.ToolstripSelectionSprite.GetComponent<UIComponent>();
-                    label.isVisible = !toolstripTabIsOpen;
-                }
+                var tscontainer = UIView.Find<UITabContainer>("TSContainer");
+                tscontainer.selectedIndex = -1;
+                ToolstripBarHoverIndex = -1;
             }
-            catch (Exception)
-            { }
+            catch (Exception) { }
         }
         public void UpdateGTSContainer()
         {
@@ -97,13 +100,18 @@ namespace CitiesControllerMod.Services
         // toolstrip bar navigation
         public string ToolstripSelectionName()
         {
-            return tsBar.MainToolstripItems[tsContainer.Self.selectedIndex].name;
+            try
+            {
+                return tsBar.MainToolstripItems[tsContainer.Self.selectedIndex].name;
+            }
+            catch (Exception) { }
+            return "";
         }
         public void ToolstripSetSelectedItemHover(bool apply)
         {
             try
             {
-                UIButton toolstripItemToSelect = UIView.Find<UIButton>(tsBar.MainToolstripItems[toolstripBarHoverIndex].name);
+                UIButton toolstripItemToSelect = UIView.Find<UIButton>(tsBar.MainToolstripItems[ToolstripBarHoverIndex].name);
                 toolstripItemToSelect.state = apply ? UIButton.ButtonState.Hovered : UIButton.ButtonState.Normal;
             }
             catch (Exception) { }
@@ -112,23 +120,23 @@ namespace CitiesControllerMod.Services
         {
             // at low framerates there is a small lag when this runs. needs fix
             // selectedIndex = -1 means "none chosen". could be useful for implementing console-style nav here
-            try
+            UIComponent component;
+            int offset = 0;
+            if (ToolstripBarHoverIndex == -1)
             {
-                UIComponent component;
-                int offset = 0;
-                if (toolstripBarHoverIndex == -1)
-                {
-                    toolstripBarHoverIndex = 0;
-                }
-                else
-                {
-                    offset = isNext ? +1 : -1;
-                }
-
-                var selectedComponent = tsBar.MainToolstripItems[toolstripBarHoverIndex];
-                component = tsBar.MainToolstripItemsSelectable[tsBar.MainToolstripItemsSelectable.FindIndex(x => x.name == selectedComponent.name) + offset];
-
-                toolstripBarHoverIndex = component.zOrder;
+                ToolstripBarHoverIndex = 0;
+            }
+            else
+            {
+                offset = isNext ? +1 : -1;
+            }
+            var selectedComponent = tsBar.MainToolstripItems[ToolstripBarHoverIndex];
+            var newSelectionIndex = tsBar.MainToolstripItemsSelectable.FindIndex(x => x.name == selectedComponent.name) + offset;
+            bool canNavigate = isNext ? newSelectionIndex < tsBar.MainToolstripItemsSelectable.Count : newSelectionIndex >= 0;
+            if (canNavigate)
+            {
+                component = tsBar.MainToolstripItemsSelectable[newSelectionIndex];
+                ToolstripBarHoverIndex = component.zOrder;
                 tsBar.ToolstripSelectionSprite.position = component.position;
                 tsBar.ToolstripSelectionSprite.relativePosition = component.relativePosition;
                 tsBar.ToolstripSelectionSprite.absolutePosition = component.absolutePosition;
@@ -137,19 +145,13 @@ namespace CitiesControllerMod.Services
                 var panel = tsBar.ToolstripSelectionSprite.components[0] as UILabel;
                 panel.text = component.name;
             }
-            catch (Exception)
-            { }
         }
         public void ToolstripClickSelection()
         {
-            try
-            {
-                tsBar.MainToolstripItems[toolstripBarHoverIndex].SimulateClick();
-                MouseService.MoveMouseToScreenCenter();
-                UpdateGTSContainer();
-                UpdateGroupToolstrip();
-            }
-            catch (Exception) { }
+            tsBar.MainToolstripItems[ToolstripBarHoverIndex].SimulateClick();
+            MouseService.MoveMouseToScreenCenter();
+            UpdateGTSContainer();
+            UpdateGroupToolstrip();
         }
         public void GoToInspectMode()
         {
@@ -160,7 +162,7 @@ namespace CitiesControllerMod.Services
             catch (Exception) { }
 
             tsContainer.Self.selectedIndex = -1;
-            toolstripBarHoverIndex = -1;
+            ToolstripBarHoverIndex = -1;
         }
 
         // toolstrip tab navigation
@@ -179,68 +181,64 @@ namespace CitiesControllerMod.Services
         }
         public void ToolstripTabMoveSelection(bool isNext)
         {
-            try
+
+            var currentScrollPanel = SelectedTabItemScrollPanel();
+            if (currentScrollPanel != null)
             {
-                var currentScrollPanel = SelectedTabItemScrollPanel();
-                if (currentScrollPanel != null)
+                //if decrement::: theres an issue with sleectedindex -1 here. shouldnt be able to non-select with dpad in gts.
+                if (currentScrollPanel.selectedIndex == -1)
+                    currentScrollPanel.selectedIndex = 0;
+
+                var navigatingIntoNegatives = !isNext && currentScrollPanel.selectedIndex == 0;
+
+                if (!navigatingIntoNegatives)
                 {
-                    //if decrement::: theres an issue with sleectedindex -1 here. shouldnt be able to non-select with dpad in gts.
-                    if (currentScrollPanel.selectedIndex == -1)
-                        currentScrollPanel.selectedIndex = 0;
-
-                    var navigatingIntoNegatives = !isNext && currentScrollPanel.selectedIndex == 0;
-
-                    if (!navigatingIntoNegatives)
+                    currentScrollPanel.selectedIndex = isNext ? currentScrollPanel.selectedIndex + 1 : currentScrollPanel.selectedIndex - 1;
+                }
+                foreach (var item in tsContainer.GTSContainer.components)
+                {
+                    if (item.name == currentScrollPanel.name)
                     {
-                        currentScrollPanel.selectedIndex = isNext ? currentScrollPanel.selectedIndex + 1 : currentScrollPanel.selectedIndex - 1;
-                    }
-                    foreach (var item in tsContainer.GTSContainer.components)
-                    {
-                        if (item.name == currentScrollPanel.name)
+                        UIScrollablePanel scrollablepanel = new UIScrollablePanel();
+                        UIScrollbar scrollbar = new UIScrollbar();
+
+                        foreach (var item2 in item.components)
                         {
-                            UIScrollablePanel scrollablepanel = new UIScrollablePanel();
-                            UIScrollbar scrollbar = new UIScrollbar();
-
-                            foreach (var item2 in item.components)
+                            if (item2.name == "ScrollablePanel")
                             {
-                                if (item2.name == "ScrollablePanel")
-                                {
-                                    scrollablepanel = item2 as UIScrollablePanel;
-                                }
-                                if (item2.name == "Scrollbar")
-                                {
-                                    scrollbar = item2 as UIScrollbar;
-                                }
+                                scrollablepanel = item2 as UIScrollablePanel;
+                            }
+                            if (item2.name == "Scrollbar")
+                            {
+                                scrollbar = item2 as UIScrollbar;
+                            }
+                        }
+
+                        bool doscroll = false;
+
+                        if (scrollablepanel.name != null)
+                        {
+                            UIButton result = scrollablepanel.components[currentScrollPanel.selectedIndex] as UIButton;
+                            result.SimulateClick(); // next up: disable tool when this hits a disabled item. keep tool enabled otherwise.
+                            if (result.position.x < 0 || result.position.x > 700)
+                            {
+                                doscroll = true;
+                            }
+                        }
+
+                        if (scrollbar.name != null)
+                        {
+                            if (doscroll)
+                            {
+                                typeof(UIScrollbar)
+                                    .GetMethod("ScrollEase", BindingFlags.NonPublic | BindingFlags.Instance)
+                                    .Invoke(scrollbar, new object[1] { isNext ? scrollbar.incrementAmount : -scrollbar.incrementAmount });
                             }
 
-                            bool doscroll = false;
-
-                            if (scrollablepanel.name != null)
-                            {
-                                UIButton result = scrollablepanel.components[currentScrollPanel.selectedIndex] as UIButton;
-                                result.SimulateClick(); // next up: disable tool when this hits a disabled item. keep tool enabled otherwise.
-                                if (result.position.x < 0 || result.position.x > 700)
-                                {
-                                    doscroll = true;
-                                }
-                            }
-
-                            if (scrollbar.name != null)
-                            {
-                                if (doscroll)
-                                {
-                                    typeof(UIScrollbar)
-                                        .GetMethod("ScrollEase", BindingFlags.NonPublic | BindingFlags.Instance)
-                                        .Invoke(scrollbar, new object[1] { isNext ? scrollbar.incrementAmount : -scrollbar.incrementAmount });
-                                }
-
-                            }
                         }
                     }
                 }
             }
-            catch (Exception)
-            { }
         }
 
         public void RenderToolStripTabHover()
@@ -359,48 +357,52 @@ namespace CitiesControllerMod.Services
         }
 
         // bulk fetching
-        public void EnsureUIElementAvailability()
+        public void EnsureUIElementAvailability(bool force)
         {
+
+            if (force)
+                LoadingActions.UIReloadNeeded = false;
+
             // aview
-            if (AView == null)
+            if (force || AView == null)
                 AView = UIView.GetAView();
 
             // toolstrip fetch
-            if (tsBar.Self == null)
+            if (force || tsBar.Self == null)
                 tsBar.Self = FetchService.FetchTSBar();
-            if (tsBar.MainToolstrip == null)
+            if (force || tsBar.MainToolstrip == null)
                 tsBar.MainToolstrip = FetchService.FetchTSBarMainToolStrip();
-            if (tsBar.MainToolstripItems == null)
+            if (force || tsBar.MainToolstripItems == null)
                 tsBar.MainToolstripItems = FetchService.FetchTSBarMainStoolStripItemsAll(tsBar.MainToolstrip);
-            if (tsBar.MainToolstripItemsSelectable == null)
+            if (force || tsBar.MainToolstripItemsSelectable == null)
                 tsBar.MainToolstripItemsSelectable = FetchService.FetchTSBarMainToolStripItemsSelectable(tsBar.MainToolstripItems);
 
             // toolstrip tabs fetch
-            if (tsContainer.Self == null)
+            if (force || tsContainer.Self == null)
                 tsContainer.Self = FetchService.FetchTSTabContainer();
-            if (tsContainer.GTSContainer == null)
+            if (force || tsContainer.GTSContainer == null)
                 tsContainer.GTSContainer = FetchService.FetchGTSContainer(tsContainer.Self);
-            if (tsContainer.GTSContainerScrollablePanelItems == null)
+            if (force || tsContainer.GTSContainerScrollablePanelItems == null)
                 tsContainer.GTSContainerScrollablePanelItems = FetchService.FetchTSPanelScrollablePanelItems(tsContainer.GTSContainer);
-            if (tsContainer.GeneratedScrollPanels == null)
+            if (force || tsContainer.GeneratedScrollPanels == null)
                 tsContainer.GeneratedScrollPanels = FetchService.FetchGeneratedScrollPanels();
 
             // toolstrip tab groups fetch
-            if (tsTabGroup.GroupToolstrip == null)
+            if (force || tsTabGroup.GroupToolstrip == null)
                 tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip(tsContainer.Self);
 
             // special buttons fetch
-            if (specialUIButtons.Esc == null)
+            if (force || specialUIButtons.Esc == null)
                 specialUIButtons.Esc = FetchService.FetchEscButton();
-            if (specialUIButtons.TSClose == null)
+            if (force || specialUIButtons.TSClose == null)
                 specialUIButtons.TSClose = FetchService.FetchTSCloseButton();
-            if (specialUIButtons.Freecamera == null)
+            if (force || specialUIButtons.Freecamera == null)
                 specialUIButtons.Freecamera = FetchService.FetchFreecameraButton();
-            if (specialUIButtons.Bulldozer == null)
+            if (force || specialUIButtons.Bulldozer == null)
                 specialUIButtons.Bulldozer = FetchService.FetchBulldozerButton();
-            if (specialUIButtons.Speed == null)
+            if (force || specialUIButtons.Speed == null)
                 specialUIButtons.Speed = FetchService.FetchSpeedButton();
-            if (specialUIButtons.Play == null)
+            if (force || specialUIButtons.Play == null)
                 specialUIButtons.Play = FetchService.FetchPlayButton();
 
             // fetch cursor tools
@@ -414,17 +416,44 @@ namespace CitiesControllerMod.Services
         {
             try
             {
-                tsBar.ToolstripSelectionSprite = AView.FindUIComponent(new ToolstripSelectionSprite().name);
-                tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent(new ToolbarTabItemSelectionSprite().name);
+                tsBar.ToolstripSelectionSprite = AView.FindUIComponent("ToolstripSelectionSprite");
+                tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent("ToolbarTabItemSelectionSprite");
             }
             catch (Exception)
             { }
 
             if (tsBar.ToolstripSelectionSprite == null)
-                tsBar.ToolstripSelectionSprite = AView.AddUIComponent(typeof(ToolstripSelectionSprite));
+            {
+                AView.AddUIComponent(typeof(ToolstripSelectionSprite));
+                tsBar.ToolstripSelectionSprite = AView.FindUIComponent("ToolstripSelectionSprite");
+            }
 
             if (tsContainer.ToolbarTabItemSelectionSprite == null)
-                tsContainer.ToolbarTabItemSelectionSprite = AView.AddUIComponent(typeof(ToolbarTabItemSelectionSprite));
+            {
+                AView.AddUIComponent(typeof(ToolbarTabItemSelectionSprite));
+                tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent("ToolbarTabItemSelectionSprite");
+            }
+        }
+
+        public static void HideCustomUIElements()
+        {
+            UIView aView = UIView.GetAView();
+            string[] componentNames = new string[] { "ToolstripSelectionSprite", "ToolbarTabItemSelectionSprite" };
+            foreach (var name in componentNames)
+            {
+                try
+                {
+                    aView.FindUIComponent(name).Hide();
+                }
+                catch (Exception) { }
+            }
+        }
+
+        public static void OnReleased()
+        {
+            UINavigationService.HideCustomUIElements();
+            UINavigationService.ResetToolstripBarIndexes();
+            LoadingActions.UIReloadNeeded = true;
         }
     }
 
