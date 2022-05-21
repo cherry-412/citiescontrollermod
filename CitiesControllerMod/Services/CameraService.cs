@@ -8,13 +8,21 @@ namespace CitiesControllerMod.Services
         public static float PosSensitivity = 25f;
         public static float ZoomSensitivity = 15f;
 
-        public void UpdateCameraPosition(Vector2 leftAnalogStickPosition)
+        public CameraController GetMainCameraController()
         {
-
             GameObject gameObject = GameObject.FindGameObjectWithTag("MainCamera");
             if (gameObject != null)
             {
-                CameraController cameraController = gameObject.GetComponent<CameraController>();
+                return gameObject.GetComponent<CameraController>();
+            }
+            return null;
+        }
+
+        public void UpdateCameraPosition(Vector2 leftAnalogStickPosition)
+        {
+            CameraController cameraController = GetMainCameraController();
+            if (cameraController != null)
+            {
                 Vector3 currentPos = cameraController.m_currentPosition;
                 Vector3 targetPos = currentPos;
                 float cameraAngle = cameraController.m_currentAngle.x * Mathf.PI / 180f;
@@ -35,10 +43,9 @@ namespace CitiesControllerMod.Services
 
         public void UpdateCameraOrbit(Vector2 rightAnalogStickPosition)
         {
-            GameObject gameObject = GameObject.FindGameObjectWithTag("MainCamera");
-            if (gameObject != null)
+            CameraController cameraController = GetMainCameraController();
+            if (cameraController != null)
             {
-                CameraController cameraController = gameObject.GetComponent<CameraController>();
                 cameraController.m_targetAngle.x +=rightAnalogStickPosition.x * OrbitSensitivity; // ORBIT SPEED MODIFIER
                 cameraController.m_targetAngle.y -= rightAnalogStickPosition.y * OrbitSensitivity;
 
@@ -57,10 +64,9 @@ namespace CitiesControllerMod.Services
 
         public void UpdateCameraZoom (Vector2 triggerPositions)
         {
-            GameObject gameObject = GameObject.FindGameObjectWithTag("MainCamera");
-            if (gameObject != null)
+            CameraController cameraController = GetMainCameraController();
+            if (cameraController != null)
             {
-                CameraController cameraController = gameObject.GetComponent<CameraController>();
                 cameraController.m_targetSize += triggerPositions.x * (cameraController.m_targetSize / ZoomSensitivity); // ZOOM SPEED MODIFIER
                 cameraController.m_targetSize -= triggerPositions.y * (cameraController.m_targetSize / ZoomSensitivity);
             }

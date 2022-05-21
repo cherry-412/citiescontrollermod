@@ -147,12 +147,10 @@ namespace CitiesControllerMod.Services
                 MouseOperations.SetCursorPosition(Screen.width / 2, Screen.height / 2);
         }
 
-        public void MoveMouseToScreenCenterIfZooming()
+        public void MoveMouseToScreenBottomRight()
         {
-            if (Input.mouseScrollDelta.x + Input.mouseScrollDelta.y != 0)
-            {
-                MoveMouseToScreenCenter();
-            }
+            if (!IsClickDownUpProcessRunning())
+                SetCursorPosition(Screen.width, Screen.height);
         }
 
         public void SetCursorPosition(int x, int y)

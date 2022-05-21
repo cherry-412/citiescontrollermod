@@ -52,6 +52,7 @@ namespace CitiesControllerMod.Services
     {
         private FetchService FetchService = new FetchService();
         private MouseService MouseService = new MouseService();
+        private CameraService CameraService = new CameraService();
 
         UIView AView;
         private TSBar tsBar = new TSBar();
@@ -119,18 +120,7 @@ namespace CitiesControllerMod.Services
             }
             return result;
         }
-        public void ToolstripSetSelectedItemHover(bool apply)
-        {
-            try
-            {
-                UIButton toolstripItemToSelect = UIView.Find<UIButton>(tsBar.MainToolstripItems[ToolstripBarHoverIndex].name);
-                toolstripItemToSelect.state = apply ? UIButton.ButtonState.Hovered : UIButton.ButtonState.Normal;
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-            }
-        }
+
         public void ToolstripMoveSelection(bool isNext)
         {
             try
@@ -210,7 +200,6 @@ namespace CitiesControllerMod.Services
         }
         public void ToolstripTabMoveSelection(bool isNext)
         {
-
             var currentScrollPanel = SelectedTabItemScrollPanel();
             if (currentScrollPanel != null)
             {
@@ -233,7 +222,6 @@ namespace CitiesControllerMod.Services
                     scrollWrapAround = true;
                 }
                 currentScrollPanel.selectedIndex = newSelectionIndex;
-
                 //scrolling new item into view
                 foreach (var item in tsContainer.GTSContainer.components)
                 {
@@ -396,10 +384,19 @@ namespace CitiesControllerMod.Services
         public void PressFreecameraButton()
         {
             specialUIButtons.Freecamera.SimulateClick();
+            var cameraController = CameraService.GetMainCameraController();
+            if (cameraController != null)
+            {
+                if (cameraController.m_freeCamera)
+                    MouseService.MoveMouseToScreenBottomRight();
+                else
+                    MouseService.MoveMouseToScreenCenter();
+            }
         }
         public void PressBulldozerButton()
         {
             specialUIButtons.Bulldozer.SimulateClick();
+            MouseService.MoveMouseToScreenCenter();
         }
         public void PressSpeedButton()
         {
