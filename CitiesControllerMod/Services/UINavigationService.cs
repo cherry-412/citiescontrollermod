@@ -85,7 +85,10 @@ namespace CitiesControllerMod.Services
                 tscontainer.selectedIndex = -1;
                 ToolstripBarHoverIndex = -1;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
         }
         public void UpdateGTSContainer()
         {
@@ -94,18 +97,26 @@ namespace CitiesControllerMod.Services
 
         public void UpdateGroupToolstrip()
         {
-            tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip(tsContainer.Self);
+            tsTabGroup.GroupToolstrip = tsContainer.Self.selectedIndex != -1 ? FetchService.FetchGroupToolstrip(tsContainer.Self) : null;
         }
 
         // toolstrip bar navigation
         public string ToolstripSelectionName()
         {
+            UpdateToolstripStates();
+            string result = "";
             try
             {
-                return tsBar.MainToolstripItems[tsContainer.Self.selectedIndex].name;
+                if (toolstripTabIsOpen)
+                {
+                    result = tsBar.MainToolstripItems[tsContainer.Self.selectedIndex].name;
+                }
             }
-            catch (Exception) { }
-            return "";
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+            return result;
         }
         public void ToolstripSetSelectedItemHover(bool apply)
         {
@@ -114,7 +125,10 @@ namespace CitiesControllerMod.Services
                 UIButton toolstripItemToSelect = UIView.Find<UIButton>(tsBar.MainToolstripItems[ToolstripBarHoverIndex].name);
                 toolstripItemToSelect.state = apply ? UIButton.ButtonState.Hovered : UIButton.ButtonState.Normal;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
         }
         public void ToolstripMoveSelection(bool isNext)
         {
@@ -159,7 +173,10 @@ namespace CitiesControllerMod.Services
             {
                 tsBar.ToolstripSelectionSprite.isVisible = false;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
 
             tsContainer.Self.selectedIndex = -1;
             ToolstripBarHoverIndex = -1;
@@ -170,13 +187,15 @@ namespace CitiesControllerMod.Services
         {
             try
             {
-                if (tsContainer.GeneratedScrollPanels.Count() > 0) // this is what needs UpdateGTSContainer
+                if (tsContainer.GeneratedScrollPanels.Count() > 0 && tsContainer.GTSContainer.selectedIndex >= 0) // this is what needs UpdateGTSContainer
                 {
                     return tsContainer.GeneratedScrollPanels.Where(x => x.name == tsContainer.GTSContainer.components[tsContainer.GTSContainer.selectedIndex].name).FirstOrDefault();
                 }
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
             return null;
         }
         public void ToolstripTabMoveSelection(bool isNext)
@@ -275,8 +294,10 @@ namespace CitiesControllerMod.Services
                     }
                 }
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
         }
 
         // toolstrip tab group navigation
@@ -301,8 +322,10 @@ namespace CitiesControllerMod.Services
                     }
                     tsTabGroup.GroupToolstrip.selectedIndex = tsContainer.GTSContainer.selectedIndex;
                 }
-                catch (Exception)
-                { }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
             }
         }
 
@@ -315,8 +338,10 @@ namespace CitiesControllerMod.Services
                 var netTool = cursorTools.NetTools[0];
                 controlPointCount = netTool.GetFieldValue<int>("m_controlPointCount");
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
             return controlPointCount;
         }
 
@@ -327,8 +352,10 @@ namespace CitiesControllerMod.Services
                 var netTool = cursorTools.NetTools[0];
                 netTool.enabled = enabled;
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
         }
 
         //button actions
@@ -390,7 +417,7 @@ namespace CitiesControllerMod.Services
                 tsContainer.GeneratedScrollPanels = FetchService.FetchGeneratedScrollPanels();
 
             // toolstrip tab groups fetch
-            if (force || tsTabGroup.GroupToolstrip == null)
+            if (force || tsTabGroup.GroupToolstrip == null && tsContainer.Self.selectedIndex != -1)
                 tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip(tsContainer.Self);
 
             // special buttons fetch
@@ -421,8 +448,10 @@ namespace CitiesControllerMod.Services
                 tsBar.ToolstripSelectionSprite = AView.FindUIComponent("ToolstripSelectionSprite");
                 tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent("ToolbarTabItemSelectionSprite");
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
 
             if (tsBar.ToolstripSelectionSprite == null)
             {
@@ -447,7 +476,10 @@ namespace CitiesControllerMod.Services
                 {
                     aView.FindUIComponent(name).Hide();
                 }
-                catch (Exception) { }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CitiesControllerMod.Services
 {
@@ -81,22 +82,21 @@ namespace CitiesControllerMod.Services
             {
                 return UnityEngine.Object.FindObjectsOfType<GeneratedScrollPanel>();
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
             return null;
         }
 
         // UI: Toolstrip tab groups
         public UITabstrip FetchGroupToolstrip(UITabContainer tscontainer)
         {
-            if (tscontainer.selectedIndex != -1)
+            foreach (var component in tscontainer.components[tscontainer.selectedIndex].components)
             {
-                foreach (var component in tscontainer.components[tscontainer.selectedIndex].components)
+                if (component.name == "GroupToolstrip")
                 {
-                    if (component.name == "GroupToolstrip")
-                    {
-                        return component as UITabstrip;
-                    }
+                    return component as UITabstrip;
                 }
             }
             return UIView.Find<UITabstrip>("GroupToolStrip"); // otherwise it'll null. maybe look into this one
@@ -135,8 +135,10 @@ namespace CitiesControllerMod.Services
             {
                 return UnityEngine.Object.FindObjectsOfType<NetTool>();
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
             return null;
         }
     }
