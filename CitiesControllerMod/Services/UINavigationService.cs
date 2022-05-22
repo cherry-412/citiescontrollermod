@@ -263,6 +263,10 @@ namespace CitiesControllerMod.Services
                                 {
                                     incrementAmount = isNext ? -50000 : 50000;
                                 }
+                                else
+                                {
+                                    incrementAmount = isNext ? incrementAmount : -incrementAmount;
+                                }
                                 typeof(UIScrollbar)
                                     .GetMethod("ScrollEase", BindingFlags.NonPublic | BindingFlags.Instance)
                                     .Invoke(scrollbar, new object[1] { incrementAmount });
