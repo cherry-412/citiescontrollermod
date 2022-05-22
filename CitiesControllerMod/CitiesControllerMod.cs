@@ -57,6 +57,7 @@ namespace CitiesControllerMod
 
         public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
         {
+            CameraService.EnsureMainCameraControllerExists();
             UINavigationService.EnsureUIElementAvailability(LoadingActions.UIReloadNeeded);
             UINavigationService.UpdateToolstripStates();
             GamePadState state = GamePad.GetState(PlayerIndex.One);
@@ -174,6 +175,10 @@ namespace CitiesControllerMod
             CameraService.UpdateCameraPosition(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
             CameraService.UpdateCameraOrbit(new Vector2(state.ThumbSticks.Right.X, state.ThumbSticks.Right.Y));
             CameraService.UpdateCameraZoom(new Vector2(state.Triggers.Left, state.Triggers.Right));
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CameraService.ClearFreecamCursorLock();  // if freecam is unlocked by escape on the keyboard
+            }
             UINavigationService.RenderToolStripTabHover();
         }
     }

@@ -388,13 +388,18 @@ namespace CitiesControllerMod.Services
         public void PressFreecameraButton()
         {
             specialUIButtons.Freecamera.SimulateClick();
-            var cameraController = CameraService.GetMainCameraController();
+            var cameraController = CameraService.MainCameraController;
             if (cameraController != null)
             {
                 if (cameraController.m_freeCamera)
-                    MouseService.MoveMouseToScreenBottomRight();
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                }
                 else
+                {
                     MouseService.MoveMouseToScreenCenter();
+                    Cursor.lockState = CursorLockMode.None;
+                }
             }
         }
         public void PressBulldozerButton()
