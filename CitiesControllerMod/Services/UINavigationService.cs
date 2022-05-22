@@ -52,7 +52,6 @@ namespace CitiesControllerMod.Services
     {
         private FetchService FetchService = new FetchService();
         private MouseService MouseService = new MouseService();
-        private CameraService CameraService = new CameraService();
 
         UIView AView;
         private TSBar tsBar = new TSBar();
@@ -121,7 +120,7 @@ namespace CitiesControllerMod.Services
             return result;
         }
 
-        public void ToolstripMoveSelection(bool isNext)
+        public void ToolstripMoveSelection(bool? isNext)
         {
             try
             {
@@ -133,17 +132,20 @@ namespace CitiesControllerMod.Services
                 }
                 else
                 {
-                    offset = isNext ? +1 : -1;
+                    offset = isNext.HasValue ? (isNext.Value ? +1 : -1) : 0;
                 }
                 var selectedComponent = tsBar.MainToolstripItems[ToolstripBarHoverIndex];
                 var newSelectionIndex = tsBar.MainToolstripItemsSelectable.FindIndex(x => x.name == selectedComponent.name) + offset;
-                if (isNext && newSelectionIndex > tsBar.MainToolstripItemsSelectable.Count - 1)
+                if (isNext.HasValue)
                 {
-                    newSelectionIndex = 0;
-                }
-                else if (!isNext && newSelectionIndex < 0)
-                {
-                    newSelectionIndex = tsBar.MainToolstripItemsSelectable.Count - 1;
+                    if (isNext.Value && newSelectionIndex > tsBar.MainToolstripItemsSelectable.Count - 1)
+                    {
+                        newSelectionIndex = 0;
+                    }
+                    else if (!isNext.Value && newSelectionIndex < 0)
+                    {
+                        newSelectionIndex = tsBar.MainToolstripItemsSelectable.Count - 1;
+                    }
                 }
                 component = tsBar.MainToolstripItemsSelectable[newSelectionIndex];
                 ToolstripBarHoverIndex = component.zOrder;
@@ -297,6 +299,22 @@ namespace CitiesControllerMod.Services
                                 {
                                     var toolstripSelectionName = ToolstripSelectionName();
                                     var visible = toolstripSelectionName != "Money" && toolstripSelectionName != "Policies";
+
+                                    if (ToolstripTabIsOpen && visible)
+                                    {
+                                        bool mainToolstripSelectionIndexMismatch = tsContainer.Self.selectedIndex != ToolstripBarHoverIndex;
+                                        bool toolstripTabSelectionMismatch = tsContainer.Self.components[tsContainer.Self.selectedIndex].name != tsContainer.GTSContainer.parent.name;
+                                        if (mainToolstripSelectionIndexMismatch || toolstripTabSelectionMismatch)
+                                        {
+                                            if (toolstripTabSelectionMismatch)
+                                            {
+                                                UpdateGTSContainer();
+                                                UpdateGroupToolstrip();
+                                            }
+                                            ToolstripBarHoverIndex = tsContainer.Self.selectedIndex;
+                                            ToolstripMoveSelection(null);
+                                        }
+                                    }
                                     var result = gtsContainerDeeperItem.components[selectedTabItemScrollPanel.selectedIndex];
                                     tsContainer.ToolbarTabItemSelectionSprite.position = result.position;
                                     tsContainer.ToolbarTabItemSelectionSprite.relativePosition = result.relativePosition;

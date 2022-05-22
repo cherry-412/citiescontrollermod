@@ -59,7 +59,6 @@ namespace CitiesControllerMod
         {
             CameraService.EnsureMainCameraControllerExists();
             UINavigationService.EnsureUIElementAvailability(LoadingActions.UIReloadNeeded);
-            UINavigationService.UpdateToolstripStates();
             GamePadState state = GamePad.GetState(PlayerIndex.One);
             if (UINavigationService.ToolstripTabIsOpen)
             {
@@ -179,6 +178,8 @@ namespace CitiesControllerMod
             {
                 CameraService.ClearFreecamCursorLock();  // if freecam is unlocked by escape on the keyboard
             }
+
+            UINavigationService.UpdateToolstripStates();
             UINavigationService.RenderToolStripTabHover();
         }
     }
