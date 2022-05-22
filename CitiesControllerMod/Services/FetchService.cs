@@ -99,7 +99,7 @@ namespace CitiesControllerMod.Services
                     return component as UITabstrip;
                 }
             }
-            return UIView.Find<UITabstrip>("GroupToolStrip"); // otherwise it'll null. maybe look into this one
+            return UIView.FindObjectOfType<UITabstrip>(); // otherwise it'll null. maybe look into this one
         }
 
 
