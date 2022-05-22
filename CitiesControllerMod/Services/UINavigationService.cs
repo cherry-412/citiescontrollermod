@@ -448,7 +448,7 @@ namespace CitiesControllerMod.Services
                 tsContainer.GeneratedScrollPanels = FetchService.FetchGeneratedScrollPanels();
 
             // toolstrip tab groups fetch
-            if (force || tsTabGroup.GroupToolstrip == null && tsContainer.Self.selectedIndex != -1)
+            if (tsContainer.Self.selectedIndex != -1 && (force || tsTabGroup.GroupToolstrip == null))
                 tsTabGroup.GroupToolstrip = FetchService.FetchGroupToolstrip(tsContainer.Self);
 
             // special buttons fetch
