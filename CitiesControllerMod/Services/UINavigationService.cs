@@ -320,6 +320,10 @@ namespace CitiesControllerMod.Services
                                     tsContainer.ToolbarTabItemSelectionSprite.relativePosition = result.relativePosition;
                                     tsContainer.ToolbarTabItemSelectionSprite.absolutePosition = result.absolutePosition;
                                     tsContainer.ToolbarTabItemSelectionSprite.size = result.size;
+
+                                    // check if selection is outside the scrollablepanel
+                                    visible = visible && (result.relativePosition.x >= -5) && (result.relativePosition.x < 670);
+
                                     tsContainer.ToolbarTabItemSelectionSprite.isVisible = ToolstripTabIsOpen && visible;
                                     var label = tsContainer.ToolbarTabItemSelectionSprite.components[0] as UILabel;
                                     label.text = result.name;
