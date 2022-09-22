@@ -3,7 +3,8 @@ An Xinput integration mod for Cities Skylines on the PC that aims to recreate th
 
 # Installation notes
 - http://www.citiesmods.com/how-to-install-mods/
-- Currently requires XInputInterface.dll from https://github.com/speps/XInputDotNet to be placed next to Cities.exe to work (this might change later)
+- Currently requires XInputInterface.dll from https://github.com/speps/XInputDotNet to be placed next to Cities.exe to work.
+- This .dll is included in the mod folder at https://github.com/cherry-412/citiescontrollermod/blob/main/CitiesControllerMod/XInputInterface.dll
 - Developed using an Xbox One S controller, playtested on Steam Deck.
 
 # If you're actually going to try this thing
