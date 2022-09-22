@@ -106,6 +106,10 @@ namespace CitiesControllerMod
                 {
                     UINavigationService.PressEscButton(); // will need to use this button to unpause as well
                 }
+                if (InputService.GetButtonClickInstant(JoystickInputs.RightStickPress, state.Buttons.RightStick))
+                {
+                    UINavigationService.PressAdvisorButton();
+                }
 
                 if (UINavigationService.ToolstripTabIsOpen)
                 {

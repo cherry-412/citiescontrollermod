@@ -104,30 +104,20 @@ namespace CitiesControllerMod.Services
 
 
         // UI: Special buttons
-        public UIButton FetchEscButton()
-        {
-            return UIView.Find<UIButton>("Esc");
-        }
-        public UIButton FetchTSCloseButton()
-        {
-            return UIView.Find<UIButton>("TSCloseButton");
-        }
-        public UIButton FetchFreecameraButton()
-        {
-            return UIView.Find<UIButton>("Freecamera");
-        }
-        public UIMultiStateButton FetchBulldozerButton()
-        {
-            return UIView.Find<UIMultiStateButton>("BulldozerButton");
-        }
-        public UIMultiStateButton FetchSpeedButton()
-        {
-            return UIView.Find<UIMultiStateButton>("Speed");
-        }
-        public UIMultiStateButton FetchPlayButton()
-        {
-            return UIView.Find<UIMultiStateButton>("Play");
-        }
+        public UIButton FetchEscButton() { return UIView.Find<UIButton>("Esc"); }
+        public UIButton FetchTSCloseButton() { return UIView.Find<UIButton>("TSCloseButton"); }
+        public UIButton FetchFreecameraButton() { return UIView.Find<UIButton>("Freecamera"); }
+        public UIMultiStateButton FetchBulldozerButton() { return UIView.Find<UIMultiStateButton>("BulldozerButton"); }
+        public UIMultiStateButton FetchSpeedButton() { return UIView.Find<UIMultiStateButton>("Speed"); }
+        public UIMultiStateButton FetchPlayButton() { return UIView.Find<UIMultiStateButton>("Play"); }
+        public UIMultiStateButton FetchAdvisorButton() { return UIView.Find<UIMultiStateButton>("AdvisorButton"); }
+        public UIButton FetchEconomyButton() { return UIView.Find<UIButton>("Money"); }
+        public UIMultiStateButton FetchAreasButton() { return UIView.Find<UIMultiStateButton>("ZoomButton"); }
+        public UIButton FetchCityInfoButton() { return UIView.Find<UIButton>("Statistics"); }
+        public UIButton FetchPoliciesButton() { return UIView.Find<UIButton>("Policies"); }
+        public UIButton FetchMilestonesButton() { return UIView.Find<UIButton>("UnlockButton"); }
+        public UIButton FetchInfoViewsButton() { return UIView.Find<UIButton>("Info"); }
+
         // Cursor tools
         public NetTool[] FetchNetTools()
         {

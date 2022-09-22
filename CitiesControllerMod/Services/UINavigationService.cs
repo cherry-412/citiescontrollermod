@@ -41,6 +41,14 @@ namespace CitiesControllerMod.Services
         public UIMultiStateButton Bulldozer;
         public UIMultiStateButton Speed;
         public UIMultiStateButton Play;
+        public UIMultiStateButton Advisor;
+
+        public UIButton Economy;
+        public UIMultiStateButton Areas;
+        public UIButton CityInfo;
+        public UIButton Policies;
+        public UIButton Milestones;
+        public UIButton InfoViews;
     }
 
     class CursorTools
@@ -429,14 +437,21 @@ namespace CitiesControllerMod.Services
             specialUIButtons.Bulldozer.SimulateClick();
             MouseService.MoveMouseToScreenCenter();
         }
-        public void PressSpeedButton()
+        public void PressSpeedButton() { specialUIButtons.Speed.SimulateClick(); }
+        public void PressPlayButton() { specialUIButtons.Play.SimulateClick(); }
+        public void PressAdvisorButton() { specialUIButtons.Advisor.SimulateClick(); }
+
+        public void PressEconomyButton() { specialUIButtons.Economy.SimulateClick(); }
+        public void PressAreasButton() { specialUIButtons.Areas.SimulateClick(); }
+        public void PressCityInfoButton()
         {
-            specialUIButtons.Speed.SimulateClick();
+            PressEscButton();
+            specialUIButtons.CityInfo.SimulateClick();
         }
-        public void PressPlayButton()
-        {
-            specialUIButtons.Play.SimulateClick();
-        }
+        public void PressPoliciesButton() { specialUIButtons.Policies.SimulateClick(); }
+        public void PressMilestonesButton() { specialUIButtons.Milestones.SimulateClick(); }
+        public void PressInfoViewsButton() { specialUIButtons.InfoViews.SimulateClick(); }
+
 
         // bulk fetching
         public void EnsureUIElementAvailability(bool force)
@@ -486,6 +501,21 @@ namespace CitiesControllerMod.Services
                 specialUIButtons.Speed = FetchService.FetchSpeedButton();
             if (force || specialUIButtons.Play == null)
                 specialUIButtons.Play = FetchService.FetchPlayButton();
+            if (force || specialUIButtons.Advisor == null)
+                specialUIButtons.Advisor = FetchService.FetchAdvisorButton();
+
+            if (force || specialUIButtons.Economy == null)
+                specialUIButtons.Economy = FetchService.FetchEconomyButton();
+            if (force || specialUIButtons.Areas == null)
+                specialUIButtons.Areas = FetchService.FetchAreasButton();
+            if (force || specialUIButtons.CityInfo == null)
+                specialUIButtons.CityInfo = FetchService.FetchCityInfoButton();
+            if (force || specialUIButtons.Policies == null)
+                specialUIButtons.Policies = FetchService.FetchPoliciesButton();
+            if (force || specialUIButtons.Milestones == null)
+                specialUIButtons.Milestones = FetchService.FetchMilestonesButton();
+            if (force || specialUIButtons.InfoViews == null)
+                specialUIButtons.InfoViews = FetchService.FetchInfoViewsButton();
 
             // fetch cursor tools
             if (cursorTools.NetTools == null)
