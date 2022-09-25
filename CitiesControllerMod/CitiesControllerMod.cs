@@ -108,7 +108,8 @@ namespace CitiesControllerMod
                 }
                 if (InputService.GetButtonClickInstant(JoystickInputs.Start, state.Buttons.Start))
                 {
-                    UINavigationService.PressEscButton(); // will need to use this button to unpause as well
+                    //UINavigationService.PressEscButton(); // will need to use this button to unpause as well
+                    MouseService.ToggleMouseMode(); // moved mouse mode to Start button until button combos become available
                 }
                 if (InputService.GetButtonClickInstant(JoystickInputs.RightStickPress, state.Buttons.RightStick))
                 {
@@ -164,7 +165,14 @@ namespace CitiesControllerMod
                 {
                     if (InputService.GetButtonClickInstant(JoystickInputs.A, state.Buttons.A))
                     {
-                        MouseService.SetLeftClickStageToDown(true);
+                        if (MouseService.JoystickMouseModeEnabled)
+                        {
+                            MouseService.SetLeftClickStageToDown(false);
+                        }
+                        else
+                        {
+                            MouseService.SetLeftClickStageToDown(true);
+                        }
                     }
                     if (InputService.GetButtonClickInstant(JoystickInputs.B, state.Buttons.B))
                     {
@@ -180,15 +188,24 @@ namespace CitiesControllerMod
                 }
             }
 
-            if (!UINavigationService.RadialMenuIsOpen())
+            if (!MouseService.JoystickMouseModeEnabled)
             {
-                CameraService.UpdateCameraPosition(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
-                CameraService.UpdateCameraOrbit(new Vector2(state.ThumbSticks.Right.X, state.ThumbSticks.Right.Y));
-                CameraService.UpdateCameraZoom(new Vector2(state.Triggers.Left, state.Triggers.Right));
+                if (!UINavigationService.RadialMenuIsOpen())
+                {
+                    CameraService.UpdateCameraPosition(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
+                    CameraService.UpdateCameraOrbit(new Vector2(state.ThumbSticks.Right.X, state.ThumbSticks.Right.Y));
+                    CameraService.UpdateCameraZoom(new Vector2(state.Triggers.Left, state.Triggers.Right));
+                }
+                else
+                {
+                    UINavigationService.UpdateRadialMenu(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
+                }
             }
             else
             {
-                UINavigationService.UpdateRadialMenu(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
+                MouseService.SetCursorPosition(
+                    (int)Math.Round(MouseService.GetCursorPosition().X + state.ThumbSticks.Left.X * 25),
+                    (int)Math.Round(MouseService.GetCursorPosition().Y - state.ThumbSticks.Left.Y * 25));
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))

@@ -1,5 +1,6 @@
 ﻿using CitiesControllerMod.Helpers;
 using UnityEngine;
+using static CitiesControllerMod.Helpers.MouseOperations;
 
 namespace CitiesControllerMod.Services
 {
@@ -22,6 +23,13 @@ namespace CitiesControllerMod.Services
     {
         public ClickEventController LeftClick { get; set; } = new ClickEventController();
         public ClickEventController RightClick { get; set; } = new ClickEventController();
+        public bool JoystickMouseModeEnabled { get; set; } = false;
+
+        public void ToggleMouseMode()
+        {
+            JoystickMouseModeEnabled = !JoystickMouseModeEnabled;
+            MoveMouseToScreenCenter();
+        }
 
         public void UpdateClickSimulationState()
         {
@@ -150,6 +158,11 @@ namespace CitiesControllerMod.Services
         public void SetCursorPosition(int x, int y)
         {
             MouseOperations.SetCursorPosition(x, y);
+        }
+
+        public MousePoint GetCursorPosition()
+        {
+            return MouseOperations.GetCursorPosition();
         }
     }
 }
