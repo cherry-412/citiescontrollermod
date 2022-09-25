@@ -89,6 +89,7 @@ namespace CitiesControllerMod.Services
                 label.isVisible = !toolstripTabIsOpen;
             }
             inspectionModeNotifier.isVisible = toolstripIsInInspectMode;
+            fakeNetTool.isVisible = !RadialMenuIsOpen();
             HideCustomUIComponentOnMouseHover(tsBar.ToolstripSelectionSprite);
         }
         public static void ResetToolstripBarIndexes()
