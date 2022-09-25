@@ -10,7 +10,7 @@ namespace CitiesControllerMod.UIComponents
             this.backgroundSprite = "ScrollbarTrack";
             name = "InspectionModeNotifier";
             text = "Inspect Mode ON";
-            absolutePosition = new Vector2(388, 999);
+            absolutePosition = new Vector2(288, 999);
             textAlignment = UIHorizontalAlignment.Center;
             verticalAlignment = UIVerticalAlignment.Middle;
             autoSize = false;
