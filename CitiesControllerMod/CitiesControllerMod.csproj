@@ -79,6 +79,7 @@
     <Compile Include="Services\FetchService.cs" />
     <Compile Include="Services\UINavigationService.cs" />
     <Compile Include="UIComponents\FakeNetTool.cs" />
+    <Compile Include="UIComponents\InspectionModeNotifier.cs" />
     <Compile Include="UIComponents\RadialMenu.cs" />
     <Compile Include="UIComponents\RadialMenuItems.cs" />
     <Compile Include="UIComponents\RadialMenuMainComponent.cs" />

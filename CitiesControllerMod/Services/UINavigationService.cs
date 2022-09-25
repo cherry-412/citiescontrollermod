@@ -70,6 +70,7 @@ namespace CitiesControllerMod.Services
         private CursorTools cursorTools = new CursorTools();
         private RadialMenu radialMenu;
         private UIComponent fakeNetTool;
+        private UIComponent inspectionModeNotifier;
 
         public static int ToolstripBarHoverIndex = -1;
         private bool toolstripTabIsOpen = false;
@@ -87,6 +88,7 @@ namespace CitiesControllerMod.Services
                 UIComponent label = tsBar.ToolstripSelectionSprite.GetComponent<UIComponent>();
                 label.isVisible = !toolstripTabIsOpen;
             }
+            inspectionModeNotifier.isVisible = toolstripIsInInspectMode;
             HideCustomUIComponentOnMouseHover(tsBar.ToolstripSelectionSprite);
         }
         public static void ResetToolstripBarIndexes()
@@ -571,6 +573,7 @@ namespace CitiesControllerMod.Services
                 tsBar.ToolstripSelectionSprite = AView.FindUIComponent("ToolstripSelectionSprite");
                 tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent("ToolbarTabItemSelectionSprite");
                 fakeNetTool = AView.FindUIComponent("FakeNetTool");
+                inspectionModeNotifier = AView.FindUIComponent("InspectionModeNotifier");
             }
             catch (Exception e)
             {
@@ -593,6 +596,12 @@ namespace CitiesControllerMod.Services
             {
                 AView.AddUIComponent(typeof(FakeNetTool));
                 fakeNetTool = AView.FindUIComponent("FakeToolCursor");
+            }
+
+            if (inspectionModeNotifier == null)
+            {
+                AView.AddUIComponent(typeof(InspectionModeNotifier));
+                inspectionModeNotifier = AView.FindUIComponent("InspectionModeNotifier");
             }
         }
 
