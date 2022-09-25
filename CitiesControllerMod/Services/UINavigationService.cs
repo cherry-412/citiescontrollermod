@@ -69,6 +69,7 @@ namespace CitiesControllerMod.Services
         private SpecialUIButtons specialUIButtons = new SpecialUIButtons();
         private CursorTools cursorTools = new CursorTools();
         private RadialMenu radialMenu;
+        private UIComponent fakeNetTool;
 
         public static int ToolstripBarHoverIndex = -1;
         private bool toolstripTabIsOpen = false;
@@ -569,6 +570,7 @@ namespace CitiesControllerMod.Services
             {
                 tsBar.ToolstripSelectionSprite = AView.FindUIComponent("ToolstripSelectionSprite");
                 tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent("ToolbarTabItemSelectionSprite");
+                fakeNetTool = AView.FindUIComponent("FakeNetTool");
             }
             catch (Exception e)
             {
@@ -585,6 +587,12 @@ namespace CitiesControllerMod.Services
             {
                 AView.AddUIComponent(typeof(ToolbarTabItemSelectionSprite));
                 tsContainer.ToolbarTabItemSelectionSprite = AView.FindUIComponent("ToolbarTabItemSelectionSprite");
+            }
+
+            if (fakeNetTool == null)
+            {
+                AView.AddUIComponent(typeof(FakeNetTool));
+                fakeNetTool = AView.FindUIComponent("FakeToolCursor");
             }
         }
 
