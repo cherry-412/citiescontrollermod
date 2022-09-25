@@ -78,6 +78,10 @@
     <Compile Include="Services\MouseService.cs" />
     <Compile Include="Services\FetchService.cs" />
     <Compile Include="Services\UINavigationService.cs" />
+    <Compile Include="UIComponents\RadialMenu.cs" />
+    <Compile Include="UIComponents\RadialMenuItems.cs" />
+    <Compile Include="UIComponents\RadialMenuMainComponent.cs" />
+    <Compile Include="UIComponents\RadialMenuSelectionComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

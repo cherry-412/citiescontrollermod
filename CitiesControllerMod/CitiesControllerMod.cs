@@ -15,7 +15,7 @@ namespace CitiesControllerMod
 
         public string Description
         {
-            get { return "(Alpha "+ GetVersion()+") - Designed for the xbox one controller and the steam deck"; }
+            get { return "(Alpha " + GetVersion() + ") - Designed for the xbox one controller and the steam deck"; }
         }
 
         public void OnSettingsUI(UIHelperBase helper)
@@ -87,8 +87,8 @@ namespace CitiesControllerMod
                 UINavigationService.PressPlayButton();
 
             //if (InputService.GetButtonClickHoldable(JoystickInputs.LeftStickPress, state.Buttons.LeftStick))
-              //  UINavigationService.ToolstripMoveSelection();
-              // this won't work yet, need to find a way to choose between instant vs. holdable based on hold time
+            //  UINavigationService.ToolstripMoveSelection();
+            // this won't work yet, need to find a way to choose between instant vs. holdable based on hold time
 
             MouseService.UpdateClickSimulationState();
 
@@ -101,6 +101,10 @@ namespace CitiesControllerMod
                 if (InputService.GetButtonClickInstant(JoystickInputs.Y, state.Buttons.Y))
                 {
                     UINavigationService.PressBulldozerButton(); // also need a shortcut for ug mode
+                }
+                if (InputService.GetButtonClickInstant(JoystickInputs.X, state.Buttons.X))
+                {
+                    UINavigationService.ToggleRadialMenu();
                 }
                 if (InputService.GetButtonClickInstant(JoystickInputs.Start, state.Buttons.Start))
                 {
@@ -175,14 +179,22 @@ namespace CitiesControllerMod
                         UINavigationService.GoToInspectMode();
                 }
             }
-            CameraService.UpdateCameraPosition(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
-            CameraService.UpdateCameraOrbit(new Vector2(state.ThumbSticks.Right.X, state.ThumbSticks.Right.Y));
-            CameraService.UpdateCameraZoom(new Vector2(state.Triggers.Left, state.Triggers.Right));
+
+            if (!UINavigationService.RadialMenuIsOpen())
+            {
+                CameraService.UpdateCameraPosition(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
+                CameraService.UpdateCameraOrbit(new Vector2(state.ThumbSticks.Right.X, state.ThumbSticks.Right.Y));
+                CameraService.UpdateCameraZoom(new Vector2(state.Triggers.Left, state.Triggers.Right));
+            }
+            else
+            {
+                UINavigationService.UpdateRadialMenu(new Vector2(state.ThumbSticks.Left.X, state.ThumbSticks.Left.Y));
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 CameraService.ClearFreecamCursorLock();  // if freecam is unlocked by escape on the keyboard
             }
-
             UINavigationService.UpdateToolstripStates();
             UINavigationService.RenderToolStripTabHover();
         }

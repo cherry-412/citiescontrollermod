@@ -1,4 +1,5 @@
 ﻿using CitiesControllerMod.Helpers;
+using CitiesControllerMod.UIComponents;
 using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,7 @@ namespace CitiesControllerMod.Services
         private TSTabGroup tsTabGroup = new TSTabGroup();
         private SpecialUIButtons specialUIButtons = new SpecialUIButtons();
         private CursorTools cursorTools = new CursorTools();
+        private RadialMenu radialMenu;
 
         public static int ToolstripBarHoverIndex = -1;
         private bool toolstripTabIsOpen = false;
@@ -405,6 +407,39 @@ namespace CitiesControllerMod.Services
             }
         }
 
+        // radial menu
+        public void ToggleRadialMenu()
+        {
+            if (radialMenu != null)
+            {
+                if (RadialMenuIsOpen())
+                {
+                    string action = radialMenu.GetSelectedAction();
+                    radialMenu.SetIsOpen(false);
+                    ReflectionExtensions.InvokeMethod(this, action);
+                }
+                else
+                {
+                    radialMenu.SetItems(RadialMenuItems.DefaultRadialMenu);
+                    radialMenu.SetIsOpen(true);
+                }
+            }
+        }
+
+        public void UpdateRadialMenu(Vector2 analogStickPosition)
+        {
+            if (radialMenu != null)
+            {
+                radialMenu.UpdateUIComponent(AView);
+                radialMenu.UpdateRadialMenuSelection(analogStickPosition);
+            }
+        }
+
+        public bool RadialMenuIsOpen()
+        {
+            return radialMenu.IsOpen;
+        }
+
         //button actions
         public void PressEscButton()
         {
@@ -516,6 +551,9 @@ namespace CitiesControllerMod.Services
                 specialUIButtons.Milestones = FetchService.FetchMilestonesButton();
             if (force || specialUIButtons.InfoViews == null)
                 specialUIButtons.InfoViews = FetchService.FetchInfoViewsButton();
+
+            if (force || radialMenu == null)
+                radialMenu = new RadialMenu();
 
             // fetch cursor tools
             if (cursorTools.NetTools == null)
