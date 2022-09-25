@@ -38,7 +38,8 @@ namespace CitiesControllerMod.UIComponents
 
         // public properties
 
-        public string GetSelectedAction() { return selectedIndex > -1 ? items[selectedIndex].Action : "NoAction"; }
+        public static string NoActionName = "NoAction";
+        public string GetSelectedAction() { return selectedIndex > -1 ? items[selectedIndex].Action : NoActionName; }
         public int OptionsCount { get { return items.Count(); } }
         public bool IsOpen { get => isOpen; }
         public void SetIsOpen(bool isOpen)

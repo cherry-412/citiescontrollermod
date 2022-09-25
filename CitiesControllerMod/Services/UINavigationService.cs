@@ -414,9 +414,10 @@ namespace CitiesControllerMod.Services
             {
                 if (RadialMenuIsOpen())
                 {
-                    string action = radialMenu.GetSelectedAction();
                     radialMenu.SetIsOpen(false);
-                    ReflectionExtensions.InvokeMethod(this, action);
+                    string actionName = radialMenu.GetSelectedAction();
+                    if (actionName != RadialMenu.NoActionName)
+                        ReflectionExtensions.InvokeMethod(this, actionName);
                 }
                 else
                 {
